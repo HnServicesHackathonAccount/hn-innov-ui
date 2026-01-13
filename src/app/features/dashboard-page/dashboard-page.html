@@ -1,0 +1,184 @@
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  body {
+    min-height: 100vh;
+  }
+  .text-gradient {
+    background: linear-gradient(to right, #f0173e, #563793);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  body {
+    min-height: max(884px, 100dvh);
+  }
+  .bg-hn {
+    background: linear-gradient(to right, #f0173e, #563793);
+  }
+</style>
+<div class="flex min-h-screen w-full flex-col">
+  <main class="flex-1 p-4 sm:p-6 lg:p-8">
+    <div class="mb-8 text-center">
+      <h1 class="text-4xl font-bold tracking-tight sm:text-5xl text-gradient font-display">
+        Scoreboard Hack
+      </h1>
+      <span
+        class="mt-2 text-slate-600 dark:text-slate-400 md:text-lg md:text-center md:max-w-3xl md:mx-auto"
+        >Que le meilleur projet gagne ! Et que les bugs soient avec vous.</span
+      >
+    </div>
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+      <div class="lg:col-span-8 flex flex-col gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <app-status-card [status]="status" [loading]="loadingStatus"></app-status-card>
+          <app-period-card
+            [formatedPeriod]="formatedPeriod"
+            [period]="period"
+            [showDates]="isStatusActive"
+            [lastHackathonDate]="lastHackathonEndDate"
+            [daysSince]="daysSinceLastHackathon"
+            [loading]="loadingPeriod"
+          >
+          </app-period-card>
+          <app-stats-card [participantsCount]="participantsCount" [juryCount]="juryCount">
+          </app-stats-card>
+        </div>
+        <app-countdown [countdown]="countdown" [showValues]="isStatusActive"> </app-countdown>
+        <app-project-info [subject]="subject" [showInfo]="isProjectVisible"> </app-project-info>
+      </div>
+      <div class="lg:col-span-4 flex flex-col gap-6">
+        <div class="flex flex-1 flex-col rounded-xl bg-white/5 bg-card-dark p-6">
+          <h3 class="mb-4 text-xl font-semibold text-white">Liste des membres du jury</h3>
+          <div class="space-y-4">
+            @if (!loading && juryMembers.length) {
+
+            <div>
+              @for (m of juryMembers; track $index) {
+              <div class="flex items-center gap-4 mb-4">
+                <img
+                  [src]="'/canetethon.png'"
+                  [alt]="
+                    'Profile picture of ' +
+                    (m.firstName ? m.firstName + ' ' + (m.lastName || '') : 'Member')
+                  "
+                  class="h-12 w-12 rounded-full"
+                />
+                <div>
+                  <p class="font-semibold text-white">
+                    {{ m.firstName ? m.firstName + ' ' + (m.lastName || '') : 'Nom inconnu' }}
+                  </p>
+                  <p class="text-sm text-white/70">Sujet : {{ m.title || 'Aucun' }}</p>
+                </div>
+              </div>
+              }
+            </div>
+            } @else{
+            <div>
+              @if (loading) {
+              <div class="text-white/70">Chargement des membres du jury…</div>
+              } @else if (!loading && (!juryMembers || juryMembers.length === 0)) {
+              <div class="text-white/70">Aucun membre du jury trouvé.</div>
+              }
+            </div>
+            }
+          </div>
+        </div>
+
+        <div class="flex flex-1 flex-col rounded-xl bg-white/5 bg-card-dark">
+          <h3 class="p-6 pb-4 text-xl font-semibold text-white">
+            {{
+              status === 'EN_COURS' || status === 'TERMINE'
+                ? 'Liste des équipes générées'
+                : 'Liste des participants'
+            }}
+          </h3>
+          <div class="overflow-y-auto">
+            <!-- Teams table (shown when EN_COURS or TERMINE) -->
+            <table
+              *ngIf="status === 'EN_COURS' || status === 'TERMINE'"
+              class="min-w-full divide-y divide-border-dark"
+            >
+              <thead class="sticky top-0 bg-card-dark bg-opacity-80 backdrop-blur-sm">
+                <tr>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/70"
+                    scope="col"
+                  >
+                    Nom de l'équipe
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/70"
+                    scope="col"
+                  >
+                    Participants
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border-dark">
+                <tr *ngIf="loading">
+                  <td colspan="2" class="px-6 py-4 text-sm text-white/70">
+                    Chargement des équipes…
+                  </td>
+                </tr>
+                <tr *ngIf="!loading && (!teams || teams.length === 0)">
+                  <td colspan="2" class="px-6 py-4 text-sm text-white/70">
+                    Aucune équipe trouvée.
+                  </td>
+                </tr>
+                <tr *ngFor="let team of teams" class="hover:bg-white/5">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                    {{ team.name || 'Équipe sans nom' }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-white/80">
+                    <div>
+                      {{ getTeamMembersDisplay(team.participants) }}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Participants table (shown when EN_ATTENTE) -->
+            <table
+              *ngIf="status !== 'EN_COURS' && status !== 'TERMINE'"
+              class="min-w-full divide-y divide-border-dark"
+            >
+              <thead class="sticky top-0 bg-card-dark bg-opacity-80 backdrop-blur-sm">
+                <tr>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/70"
+                    scope="col"
+                  >
+                    Participant
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border-dark">
+                <tr *ngIf="loading">
+                  <td class="px-6 py-4 text-sm text-white/70">Chargement des participants…</td>
+                </tr>
+                <tr *ngIf="!loading && (!participants || participants.length === 0)">
+                  <td class="px-6 py-4 text-sm text-white/70">Aucun participant trouvé.</td>
+                </tr>
+                <tr *ngFor="let participant of participants">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-white/80">
+                    {{
+                      participant.firstName +
+                        ' ' +
+                        participant.lastName +
+                        ' (' +
+                        (participant.skill || participant.competence || 'N/A') +
+                        ')'
+                    }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

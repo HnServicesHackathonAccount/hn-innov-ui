@@ -1,0 +1,90 @@
+<header
+  class="sticky top-0 z-20 flex items-center justify-between bg-background-dark/80 px-6 py-4 backdrop-blur-sm border-b border-white/10"
+>
+  <div class="flex items-center gap-3">
+    <a routerLink="/" class="px-4 py-2 rounded-md bg-hn logo-link">
+      <h1
+        class="text-3xl font-bold tracking-tight flex items-center justify-center font-display relative"
+      >
+        <span class="logo-default">
+          <span class="logo-bracket text-2xl">HN</span>
+        </span>
+      </h1>
+    </a>
+    <span class="logo-bracket text-2xl">HackathoN</span>
+  </div>
+  <nav class="hidden md:flex items-center gap-6">
+    <a class="text-white/80 hover:text-white transition-colors nav-link" routerLink="/">Accueil</a>
+    <a class="text-white/80 hover:text-white transition-colors nav-link" routerLink="/reglement"
+      >Règlement</a
+    >
+
+    <a class="text-white/80 hover:text-white transition-colors nav-link" routerLink="/inscription"
+      >S'inscrire</a
+    >
+    <a class="text-white/80 hover:text-white transition-colors nav-link" routerLink="/boite-a-idees"
+      >Proposer une idée</a
+    >
+    <a class="text-white/80 hover:text-white transition-colors nav-link" routerLink="/dashboard"
+      >Suivre le Hackathon</a
+    >
+    <a class="text-white/80 hover:text-white transition-colors" routerLink="/contact"
+      >Contact</a
+    >
+
+    <!-- <a class="text-white/80 hover:text-white transition-colors" routerLink="/explorer">Explorer</a> -->
+  </nav>
+
+  <!-- Menu mobile button -->
+  <button
+    class="md:hidden p-2 text-white hover:text-primary transition-colors"
+    (click)="toggleMenu()"
+  >
+    <span class="material-symbols-outlined text-2xl">{{ isMenuOpen ? 'close' : 'menu' }}</span>
+  </button>
+</header>
+
+<!-- Menu mobile -->
+<nav
+  *ngIf="isMenuOpen"
+  class="md:hidden fixed top-[73px] left-0 right-0 bg-background-dark/95 backdrop-blur-sm border-b border-white/10 z-10"
+>
+  <div class="flex flex-col px-6 py-4 gap-4 mt-4">
+    <a
+      class="text-white/80 hover:text-white transition-colors py-2"
+      routerLink="/"
+      (click)="closeMenu()"
+      >Accueil</a
+    >
+    <a
+      class="text-white/80 hover:text-white transition-colors py-2"
+      routerLink="/reglement"
+      (click)="closeMenu()"
+      >Règlement</a
+    >
+    <a
+      class="text-white/80 hover:text-white transition-colors py-2"
+      routerLink="/inscription"
+      (click)="closeMenu()"
+      >S'inscrire</a
+    >
+    <a
+      class="text-white/80 hover:text-white transition-colors py-2"
+      routerLink="/boite-a-idees"
+      (click)="closeMenu()"
+      >Proposer une idée</a
+    >
+    <a
+      class="text-white/80 hover:text-white transition-colors py-2"
+      routerLink="/dashboard"
+      (click)="closeMenu()"
+      >Suivre le Hackathon</a
+    >
+    <a
+      class="text-white/80 hover:text-white transition-colors py-2"
+      routerLink="/dashboard"
+      (click)="closeMenu()"
+      >Contact</a
+    >
+  </div>
+</nav>
